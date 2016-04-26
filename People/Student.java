@@ -9,7 +9,6 @@ public class Student extends Person {
 		this.studentNumber = studentNumber;
 	}
 
-
 	public String getStudentNumber() {
 		return studentNumber;
 	}

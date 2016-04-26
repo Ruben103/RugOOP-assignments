@@ -14,7 +14,6 @@ public abstract class Person implements Comparable<Person> {
 		this.phoneNumber = phoneNumber;
 	}
 
-
 	public String getName() {
 		return name;
 	}
@@ -39,7 +38,6 @@ public abstract class Person implements Comparable<Person> {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-
 
 	public String getAddress() {
 		return address;

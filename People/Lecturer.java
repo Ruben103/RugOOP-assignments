@@ -9,7 +9,6 @@ public class Lecturer extends Person {
 		this.employeeNumber = employeeNumber;
 	}
 
-
 	public String getEmployeeNumber() {
 		return employeeNumber;
 	}
@@ -22,6 +21,5 @@ public class Lecturer extends Person {
 	public String toString(){
 		return concat(super.toString(),",", " Employee Number: ", this.getEmployeeNumber());
 	}
-
 
 }
