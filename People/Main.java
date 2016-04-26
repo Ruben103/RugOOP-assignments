@@ -15,6 +15,7 @@ public class Main {
 		persons.add(new Lecturer("White", "Sow", "Fairy Ln 1", "0123", "555555555"));
 		persons.add(new Student("Malik", "Charlie", "York Rd 27", "1011121", "6666666666"));
 		
+		/* Add new Professor */
 		persons.add(new Professor("Corradini", "Matteo", "York Rd 27", "1011121", "777777777", "Dr."));
 		persons.add(new Professor("Atac", "Berke", "York Rd 27", "1011121", "888888888", "Dr."));
 		persons.add(new Professor("Palmieri", "Viola", "York Rd 27", "1011121", "9999999999", "Dr."));
@@ -22,13 +23,15 @@ public class Main {
 		for (Person person : persons) {
 			System.out.println(person);
 		}
-
-		System.out.println("\nafter sorting:\n");
+		
+		/* Sort by name field */
+		println("\nafter sorting by name:\n");
 		Collections.sort(persons);
 		for (Person person : persons) {
 			System.out.println(person);
 		}
 
+		/* Sort by first name field */
 		Collections.sort(persons, Person.compareFirstName());
 		System.out.println("\nafter sorting by first name:\n");
 		for (Person person : persons) {

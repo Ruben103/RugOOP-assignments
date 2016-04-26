@@ -47,6 +47,7 @@ public abstract class Person implements Comparable<Person> {
 		this.address = address;
 	}
 	
+	/* Return a String as concatenation of the input ones */
 	public String concat(String... stringToConcat){
 		String buffer = new String("");
 		for (String string : stringToConcat)
@@ -60,11 +61,12 @@ public abstract class Person implements Comparable<Person> {
 				" Phone Number: ", this.getPhoneNumber()); 
 	}
 	
-	
+	/* Implement sort by name */
 	public int compareTo(Person other){
 		return this.getName().compareTo(other.getName());
 	}
 	
+	/* Implement sort by first name */
 	public static Comparator<Person> compareFirstName(){
 		return new Comparator<Person>(){
 			public int compare(Person person1, Person person2){
