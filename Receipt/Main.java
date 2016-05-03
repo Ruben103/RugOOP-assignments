@@ -18,20 +18,20 @@ public class Main {
 
         //TODO: Construct Serializer subclasses.
         Serializer jsonSerializer = null; //new JSONSerializer();
-        Serializer xmlSerializer = null; //new XMLSerializer();
+        Serializer xmlSerializer = new XMLSerializer();
 
         // Print serialized receipts. The OutputStream of jsonSerializer and xmlSerializer should
         //   be set to System.out, which will cause printing to occur during serialization.
         System.out.println("JSON:");
         System.out.println("Receipt 1:");
-        receipt1.serialize(jsonSerializer);
+        //receipt1.serialize(jsonSerializer);
         System.out.println("\nReceipt 2:");
-        receipt2.serialize(jsonSerializer);
+        //receipt2.serialize(jsonSerializer);
 
         System.out.println("\n\nXML:");
         System.out.println("Receipt 1:");
-        //receipt1.serialize(xmlSerializer);
+        receipt1.serialize(xmlSerializer);
         System.out.println("\nReceipt 2:");
-        //receipt2.serialize(xmlSerializer);
+        receipt2.serialize(xmlSerializer);
     }
 }

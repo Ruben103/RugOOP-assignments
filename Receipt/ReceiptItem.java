@@ -12,8 +12,16 @@ public class ReceiptItem implements Serializable {
         return unitCost;
     }
 
-    @Override
+    public String getProductName() {
+		return productName;
+	}
+
+	@Override
     public void serialize(Serializer serializer) {
         //TODO: serialize all fields using serializer.
+    	serializer.objectStart("ReceiptItem");
+    	serializer.addField("productName", this.getProductName());
+    	serializer.addField("unitCost", this.getUnitCost());
+    	serializer.objectEnd("ReceiptItem");
     }
 }

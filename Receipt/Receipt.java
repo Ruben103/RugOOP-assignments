@@ -17,7 +17,27 @@ public class Receipt implements Serializable {
         totalCost = 0;
     }
 
-    public void addItem(ReceiptItem item, int amount) {
+    public double getTotalCost() {
+		return totalCost;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public int getRegisterNr() {
+		return registerNr;
+	}
+
+	public int getCustomerNr() {
+		return customerNr;
+	}
+	
+	public List<ReceiptItem> getItemList() {
+		return itemList;
+	}
+
+	public void addItem(ReceiptItem item, int amount) {
         itemList.add(item);
         totalCost += item.getUnitCost() * amount;
     }
@@ -25,5 +45,12 @@ public class Receipt implements Serializable {
     @Override
     public void serialize(Serializer serializer) {
         //TODO: serialize all fields using serializer.
+    	serializer.objectStart("Receipt");
+    	serializer.addField("registerNr", this.getRegisterNr());
+    	serializer.addField("customerNr", this.getCustomerNr());
+    	serializer.addField("employeeName", this.getEmployeeName());
+    	serializer.addField("totalCost", this.getTotalCost());
+    	serializer.addField("itemList", this.getItemList());
+    	serializer.objectEnd("Receipt");
     }
 }

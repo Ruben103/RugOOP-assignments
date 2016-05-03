@@ -12,7 +12,7 @@ public abstract class Serializer {
     public Serializer() {
         this.outStream = System.out;
     }
-
+    
     /**
      * Begin serializing a new object. Should always be eventually followed by a call to objectEnd
      *   with the identical objectName.
