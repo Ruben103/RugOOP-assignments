@@ -38,6 +38,7 @@ public abstract class Serializer {
     public abstract void addField(String fieldName, boolean b);
     public abstract void addField(String fieldName, String s);
     public abstract void addField(String fieldName, List<? extends Serializable> l);
+    //Should we do remove it?
     public abstract void addField(String fieldName, Serializable object);
     /**
      * Ends the serialization of an object, potentially continuing serialization on other
