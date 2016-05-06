@@ -19,6 +19,16 @@ public abstract class Serializer {
      * @param objectName Name of the object to begin serializing.
      */
     public abstract void objectStart(String objectName);
+    
+    /**
+     *  This couple of utility functions are used to print the specific tag of the
+     *  different serializer class.
+     * @param field name of the field has to be written in the tag.
+     * @return String object with the correct tag of the serializer.
+     */
+    public abstract String openTag (String field);
+    public abstract String closeTag (String field);
+    
     /**
      * Add a field/value pair to the serialization.
      * @param fieldName Name of the field to be added.

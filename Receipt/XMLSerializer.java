@@ -17,13 +17,13 @@ public class XMLSerializer extends Serializer {
 		this.outStream.print(this.openTag(objectName) + "\n");
 	}
 	
-	// open a tag for a field
-	private String openTag (String field){
+	@Override
+	public String openTag (String field){
 		return "<" + field + ">";
 	}
 	
-	// close a tag for a field
-	private String closeTag (String field){
+	@Override
+	public String closeTag (String field){
 		return "</" + field + ">";
 		
 	}
