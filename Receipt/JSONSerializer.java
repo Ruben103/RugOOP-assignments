@@ -15,17 +15,17 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public String openTag(String field) {
 		// TODO Auto-generated method stub
-		return "{\n" + field + ": { \n";
+		return "{\n" + field + ": {";
 	}
 
 	@Override
 	public String closeTag(String field) {
 		// TODO Auto-generated method stub
-		return "}\n";
+		return "\b \n}";
 	}
 	
 	private String printFieldTemplate(String fieldName, Object x){
-		return fieldName + ":" + x + "\n";
+		return "\n" + fieldName + ":" + x + ",";
 	}
 	
 	@Override
@@ -62,15 +62,15 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public void addField(String fieldName, List<? extends Serializable> l) {
 		// TODO Auto-generated method stub
-		this.outStream.print(this.printFieldTemplate(fieldName, " ") + "[\n");
-		
+		this.outStream.print("\n" + fieldName+": [\n");
 		Iterator<? extends Serializable> iter = l.iterator();
 		
 		while (iter.hasNext()){
 			iter.next().serialize(this);
+			if (iter.hasNext()) {this.outStream.print(",\n");}
 		}
 		
-		this.outStream.print("]\n");
+		this.outStream.print("\n] ");
 	}
 
 	@Override
