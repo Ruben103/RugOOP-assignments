@@ -24,7 +24,8 @@ public class JSONSerializer extends Serializer {
 		return "\b \n}";
 	}
 	
-	private String printFieldTemplate(String fieldName, Object x){
+	@Override
+	public String printFieldTemplate(String fieldName, Object x){
 		return "\n" + fieldName + ":" + x + ",";
 	}
 	

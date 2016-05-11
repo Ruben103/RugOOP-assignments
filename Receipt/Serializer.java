@@ -30,6 +30,14 @@ public abstract class Serializer {
     public abstract String closeTag (String field);
     
     /**
+     * General template to print a field, used by addField for primitive types.
+     * @param fieldName name of the field to print
+     * @param x value of the field
+     * @return String object with a template of the correct serializer
+     */
+    public abstract String printFieldTemplate(String fieldName, Object x);
+    
+    /**
      * Add a field/value pair to the serialization.
      * @param fieldName Name of the field to be added.
      */

@@ -30,8 +30,8 @@ public class Main {
 
         System.out.println("\n\nXML:");
         System.out.println("Receipt 1:");
-        //receipt1.serialize(xmlSerializer);
+        receipt1.serialize(xmlSerializer);
         System.out.println("\nReceipt 2:");
-        //eceipt2.serialize(xmlSerializer);
+        receipt2.serialize(xmlSerializer);
     }
 }

@@ -24,44 +24,36 @@ public class XMLSerializer extends Serializer {
 	
 	@Override
 	public String closeTag (String field){
-		return "</" + field + ">";
-		
+		return "</" + field + ">\n";	
+	}
+	
+	@Override
+	public String printFieldTemplate(String fieldName, Object x){
+		return this.openTag(fieldName) + x + this.closeTag(fieldName);
 	}
 
 	@Override
 	public void addField(String fieldName, int i) {
 		// TODO Auto-generated method stub
-		this.objectStart(fieldName);
-		this.outStream.print(i);
-		this.objectEnd(fieldName);
-
+		this.outStream.print(this.printFieldTemplate(fieldName, i));
 	}
 
 	@Override
 	public void addField(String fieldName, double d) {
 		// TODO Auto-generated method stub
-		this.objectStart(fieldName);
-		this.outStream.print(d);
-		this.objectEnd(fieldName);
-
+		this.outStream.print(this.printFieldTemplate(fieldName, d));
 	}
 
 	@Override
 	public void addField(String fieldName, boolean b) {
 		// TODO Auto-generated method stub
-		this.objectStart(fieldName);
-		this.outStream.print(b ? "true" : "false");
-		this.objectEnd(fieldName);
-
+		this.outStream.print(this.printFieldTemplate(fieldName, b ? "true" : "false"));
 	}
 
 	@Override
 	public void addField(String fieldName, String s) {
 		// TODO Auto-generated method stub
-		this.objectStart(fieldName);
-		this.outStream.print('"' + s + '"');
-		this.objectEnd(fieldName);
-
+		this.outStream.print(this.printFieldTemplate(fieldName, '"' + s + '"'));
 	}
 
 	@Override
@@ -86,7 +78,7 @@ public class XMLSerializer extends Serializer {
 	@Override
 	public void objectEnd(String objectName) {
 		// TODO Auto-generated method stub
-		this.outStream.print("\n"+this.closeTag(objectName) );
+		this.outStream.print(this.closeTag(objectName) );
 		this.outStream.flush();
 	}
 
