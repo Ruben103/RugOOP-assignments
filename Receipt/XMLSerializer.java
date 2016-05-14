@@ -15,11 +15,12 @@ public class XMLSerializer extends Serializer {
 	public void objectStart(String objectName) {
 		// TODO Auto-generated method stub
 		this.outStream.print(this.openTag(objectName) + "\n");
+		this.incIndetedLine();
 	}
 	
 	@Override
 	public String openTag (String field){
-		return "<" + field + ">";
+		return this.printTab() + "<" + field + ">";
 	}
 	
 	@Override
@@ -78,7 +79,8 @@ public class XMLSerializer extends Serializer {
 	@Override
 	public void objectEnd(String objectName) {
 		// TODO Auto-generated method stub
-		this.outStream.print(this.closeTag(objectName) );
+		this.decIndetedLine();
+		this.outStream.print(this.printTab() + this.closeTag(objectName));
 		this.outStream.flush();
 	}
 

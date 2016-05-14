@@ -15,18 +15,25 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public String openTag(String field) {
 		// TODO Auto-generated method stub
-		return "{\n" + field + ": {";
+		String buff = this.printTab() + "{\n";
+		this.incIndetedLine();
+		buff += this.printTab() + field + ": {";
+		this.incIndetedLine();
+		return buff;
 	}
 
 	@Override
 	public String closeTag(String field) {
 		// TODO Auto-generated method stub
-		return "\b \n}";
+		String buff = "\b \n" + this.printTab() + "}\n";
+		this.decIndetedLine();
+		buff += this.printTab() + "}";
+		return buff;
 	}
 	
 	@Override
 	public String printFieldTemplate(String fieldName, Object x){
-		return "\n" + fieldName + ":" + x + ",";
+		return "\n"+ this.printTab() + fieldName + ":" + x + ",";
 	}
 	
 	@Override
@@ -63,15 +70,19 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public void addField(String fieldName, List<? extends Serializable> l) {
 		// TODO Auto-generated method stub
-		this.outStream.print("\n" + fieldName+": [\n");
+		this.outStream.print("\n" + this.printTab() + fieldName +": [\n");
 		Iterator<? extends Serializable> iter = l.iterator();
+		
+		this.incIndetedLine();
 		
 		while (iter.hasNext()){
 			iter.next().serialize(this);
 			if (iter.hasNext()) {this.outStream.print(",\n");}
 		}
 		
-		this.outStream.print("\n] ");
+		this.decIndetedLine();
+		
+		this.outStream.print("\n" + this.printTab() + "] ");
 	}
 
 	@Override
@@ -82,6 +93,7 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public void objectEnd(String objectName) {
 		// TODO Auto-generated method stub
+		this.decIndetedLine();
 		this.outStream.print(this.closeTag(objectName));
 	}
 
