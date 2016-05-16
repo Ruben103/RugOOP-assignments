@@ -15,25 +15,25 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public String openTag(String field) {
 		// TODO Auto-generated method stub
-		String buff = this.printTab() + "{\n";
-		this.incIndetedLine();
-		buff += this.printTab() + field + ": {";
-		this.incIndetedLine();
+		String buff = this.iLine.printTab() + "{\n";
+		this.iLine.incIndetedLine();
+		buff += this.iLine.printTab() + field + ": {";
+		this.iLine.incIndetedLine();
 		return buff;
 	}
 
 	@Override
 	public String closeTag(String field) {
 		// TODO Auto-generated method stub
-		String buff = "\b \n" + this.printTab() + "}\n";
-		this.decIndetedLine();
-		buff += this.printTab() + "}";
+		String buff = "\b \n" + this.iLine.printTab() + "}\n";
+		this.iLine.decIndetedLine();
+		buff += this.iLine.printTab() + "}";
 		return buff;
 	}
 	
 	@Override
 	public String printFieldTemplate(String fieldName, Object x){
-		return "\n"+ this.printTab() + fieldName + ":" + x + ",";
+		return "\n"+ this.iLine.printTab() + fieldName + ":" + x + ",";
 	}
 	
 	@Override
@@ -70,19 +70,19 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public void addField(String fieldName, List<? extends Serializable> l) {
 		// TODO Auto-generated method stub
-		this.outStream.print("\n" + this.printTab() + fieldName +": [\n");
+		this.outStream.print("\n" + this.iLine.printTab() + fieldName +": [\n");
 		Iterator<? extends Serializable> iter = l.iterator();
 		
-		this.incIndetedLine();
+		this.iLine.incIndetedLine();
 		
 		while (iter.hasNext()){
 			iter.next().serialize(this);
 			if (iter.hasNext()) {this.outStream.print(",\n");}
 		}
 		
-		this.decIndetedLine();
+		this.iLine.decIndetedLine();
 		
-		this.outStream.print("\n" + this.printTab() + "] ");
+		this.outStream.print("\n" + this.iLine.printTab() + "] ");
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class JSONSerializer extends Serializer {
 	@Override
 	public void objectEnd(String objectName) {
 		// TODO Auto-generated method stub
-		this.decIndetedLine();
+		this.iLine.decIndetedLine();
 		this.outStream.print(this.closeTag(objectName));
 	}
 
