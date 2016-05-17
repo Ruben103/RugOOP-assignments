@@ -11,13 +11,12 @@ public class JSONSerializer extends Serializer {
 		super(out);
 	}
 	
-	//TODO: Add indentetion and comma
 	@Override
 	public String openTag(String field) {
 		// TODO Auto-generated method stub
 		String buff = this.iLine.printTab() + "{\n";
 		this.iLine.incIndetedLine();
-		buff += this.iLine.printTab() + field + ": {";
+		buff += this.iLine.printTab() + field + ": { ";
 		this.iLine.incIndetedLine();
 		return buff;
 	}
