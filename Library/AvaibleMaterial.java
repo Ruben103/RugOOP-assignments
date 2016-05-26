@@ -29,6 +29,12 @@ public abstract class AvaibleMaterial {
 		return rent == null ? true : false;
 	}
 	
+	@Override
+	public String toString(){
+		return "Author: "+this.getAuthor() + 
+				", Title:" + this.getTitle(); 
+	}
+	
 	/* Begin getters and setters*/
 	public int getPrivateId() {
 		return privateId;

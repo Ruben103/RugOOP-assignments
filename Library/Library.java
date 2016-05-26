@@ -1,14 +1,16 @@
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Observable;
 import java.util.Vector;
 
-public class Library {
+public class Library extends Observable{
 
-	public Vector<Member> members;
-	public Vector<AvaibleMaterial> materials;
+	private Vector<Member> members;
+	private Vector<AvaibleMaterial> materials;
 	
-	public ArrayList<RentData> rentHistory;
-	public ArrayList<RentData> reservations;
+	private ArrayList<RentData> rentHistory;
+	private ArrayList<RentData> reservations;
+	
 	
 	public Library(){
 		members = new Vector<Member>();
@@ -17,6 +19,41 @@ public class Library {
 		rentHistory = new ArrayList<RentData>();
 		reservations = new ArrayList<RentData>();
 	} 
+	
+	public void sendNotificationToObs(String message){
+		setChanged();
+		notifyObservers(message);
+	}
+	
+	public void addMaterial(AvaibleMaterial mat){
+		materials.add(mat.getPrivateId(), mat);
+		this.sendNotificationToObs(this.materialToString());
+	}
+	
+	public void addMember(Member mem){
+		members.add(mem.getMemberId(), mem);
+		this.sendNotificationToObs(this.memberToString());
+	}
+	
+	public String materialToString(){
+		String buff = "";
+		int count = 1;
+		for (AvaibleMaterial mat : materials){
+			buff+= count+") "+mat+"\n";
+			count++;
+		}
+		return buff;
+	}
+	
+	public String memberToString(){
+		String buff = "";
+		int count = 1;
+		for (Member mem : members){
+			buff+= count+") "+mem+"\n";
+			count++;
+		}
+		return buff;
+	}
 	
 	public void returnMaterial(RentData rent){
 		rent.setEndDate(new Date());

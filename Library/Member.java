@@ -14,12 +14,19 @@ public class Member {
 	
 	public Member(String name, String surname, String address, Library lib) {
 		this.setName(name);
-		this.setName(surname);
+		this.setSurname(surname);
 		this.setLib(lib);
 		this.setAddress(address);
 		this.rentMaterial = new Vector<RentData>();
 		this.setMemberId(Member.getId());
 		Member.setId(Member.getId()+1);
+	}
+	
+	@Override
+	public String toString(){
+		return "Name: " + this.getName() +
+				", Surname: " + this.getSurname() +
+				", Address: " + this.getAddress();
 	}
 	
 	public void returnMaterial(AvaibleMaterial mat){
