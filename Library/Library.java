@@ -81,5 +81,11 @@ public class Library extends Observable{
 		reservations.add(rent);
 		return true;
 	}
-	
+
+	public Vector<Member> getMembers() {
+		return members;
+	}
+	public Vector<AvaibleMaterial> getMaterials() {
+		return materials;
+	}
 }
