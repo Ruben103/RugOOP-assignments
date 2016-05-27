@@ -1,3 +1,6 @@
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class RentData {
@@ -12,16 +15,29 @@ public class RentData {
 		this.setStartDate(null);
 	}
 	
-	public RentData(AvaibleMaterial mat, Member mem, Date startDate){
+	public RentData(Member mem, AvaibleMaterial mat, Date startDate){
 		this.setMat(mat);
 		this.setMem(mem);
 		this.setStartDate(startDate);
 	}
-
-	public void freeBook(){
-		mat.setRent(null);
+	
+	public RentData(Member mem, AvaibleMaterial mat, String startDate){
+		this.setMat(mat);
+		this.setMem(mem);
+		DateFormat format = new SimpleDateFormat("dd-mm-yyyy");
+		Date date;
+		try {
+			date = format.parse(startDate);
+			this.setStartDate(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 	
+
+	public void freeMat(){
+		this.mat.setRent(null);
+	}	
 	
 	public void setMat(AvaibleMaterial mat) {
 		this.mat = mat;

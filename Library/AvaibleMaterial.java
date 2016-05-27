@@ -31,8 +31,7 @@ public abstract class AvaibleMaterial {
 	
 	@Override
 	public String toString(){
-		return "Author: "+this.getAuthor() + 
-				", Title:" + this.getTitle(); 
+		return this.getAuthor()+ ": "+this.getTitle(); 
 	}
 	
 	/* Begin getters and setters*/

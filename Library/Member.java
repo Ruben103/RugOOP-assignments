@@ -10,31 +10,40 @@ public class Member {
 	
 	private static int id = 0;
 	
-	Vector<RentData> rentMaterial;
+	Vector<RentData> rents;
 	
 	public Member(String name, String surname, String address, Library lib) {
 		this.setName(name);
 		this.setSurname(surname);
 		this.setLib(lib);
 		this.setAddress(address);
-		this.rentMaterial = new Vector<RentData>();
+		this.rents = new Vector<RentData>();
 		this.setMemberId(Member.getId());
 		Member.setId(Member.getId()+1);
 	}
 	
 	@Override
 	public String toString(){
-		return "Name: " + this.getName() +
-				", Surname: " + this.getSurname() +
-				", Address: " + this.getAddress();
+		return this.getSurname() + " " + this.getName();
 	}
 	
+	public Vector<AvaibleMaterial> getRentMats(){
+		Vector<AvaibleMaterial> rentMat = new Vector<AvaibleMaterial>();
+		for (RentData rent : this.rents)
+			rentMat.addElement(rent.getMat());
+		return rentMat;
+	}
+	
+	public Vector<RentData> getRents() {
+		return rents;
+	}
+
 	public void returnMaterial(AvaibleMaterial mat){
-		rentMaterial.set(mat.getPrivateId(), null);
+		rents.set(mat.getPrivateId(), null);
 	}
 	
 	public void addRent(RentData rent){
-		this.rentMaterial.add(rent);
+		this.rents.add(rent);
 	}
 	
 	public String getName() {
