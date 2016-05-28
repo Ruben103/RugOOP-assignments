@@ -1,4 +1,3 @@
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -16,7 +15,7 @@ public class LibraryTest implements Observer{
 		lib.addMember(new Member("Berke", "Atac", "Van Houtenlaan 27", lib));
 		lib.addMember(new Member("Corradini", "Matteo", "Van Houtenlaan 27", lib));
 		
-		lib.rentingMaterial(lib.getMembers().get(1), lib.getMaterials().get(1), new Date());
+		//lib.rentingMaterial(lib.getMembers().get(1), lib.getMaterials().get(1), new Date());
 		
 		LibraryWindow window = new LibraryWindow(lib);
 		window.setVisible(true);

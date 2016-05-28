@@ -17,7 +17,7 @@ public class Member {
 		this.setSurname(surname);
 		this.setLib(lib);
 		this.setAddress(address);
-		this.rents = new Vector<RentData>();
+		this.rents = new Vector<RentData>(lib.getMaterials().size());
 		this.setMemberId(Member.getId());
 		Member.setId(Member.getId()+1);
 	}
@@ -38,8 +38,8 @@ public class Member {
 		return rents;
 	}
 
-	public void returnMaterial(AvaibleMaterial mat){
-		rents.set(mat.getPrivateId(), null);
+	public void returnMaterial(RentData rent){
+		this.rents.remove(rent);
 	}
 	
 	public void addRent(RentData rent){

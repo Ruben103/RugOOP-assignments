@@ -24,7 +24,7 @@ public class RentData {
 	public RentData(Member mem, AvaibleMaterial mat, String startDate){
 		this.setMat(mat);
 		this.setMem(mem);
-		DateFormat format = new SimpleDateFormat("dd-mm-yyyy");
+		DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 		Date date;
 		try {
 			date = format.parse(startDate);

@@ -4,17 +4,16 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
-
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -75,19 +74,56 @@ public class LibraryWindow extends JFrame{
 			}
 		});
 		
+		/*Report button*/
+		this.buttons[0].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		/*Rent button*/
 		this.buttons[1].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				makeRent();
+				LibraryWindow.this.makeRent();
 			}
 		});
-		
 		/*Return button*/
 		this.buttons[2].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				makeReturn();
+				LibraryWindow.this.makeReturn();
+			}
+		});
+		/*Save button*/
+		this.buttons[3].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		/*Restore button*/
+		this.buttons[4].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		/*New Member button*/
+		this.buttons[5].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		/*New Book button*/
+		this.buttons[6].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		
+		/*IncDay button*/
+		this.buttons[7].addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.incDate();
 			}
 		});
 		
@@ -99,22 +135,35 @@ public class LibraryWindow extends JFrame{
 		if (this.memberJlist.getSelectedValue() != null && this.freeMatJlist.getSelectedValue() != null){
 			if (this.lib.rentingMaterial(this.memberJlist.getSelectedValue(), 
 										 this.freeMatJlist.getSelectedValue(), 
-										 this. date.getText())){
-				this.freeMatJlist.setListData(this.lib.getFreeMaterial());
-				this.rentedMatJlist.setListData(this.memberJlist.getSelectedValue().getRentMats());
+										 this.date.getText())){
+				this.refreshLists();
 			}
 		}
 	}
 	
 	private void makeReturn(){
-		if (this.memberJlist.getSelectedValue() != null && this.rentedMatJlist.getSelectedValue() != null){
-			RentData rentToRemove = this.lib.returnRent(this.memberJlist.getSelectedValue(), 
-														this.rentedMatJlist.getSelectedValue());
+		Member mem = this.memberJlist.getSelectedValue();
+		AvaibleMaterial mat = this.rentedMatJlist.getSelectedValue();
+		if (mem != null && mat  != null){
+			RentData rentToRemove = mat.getRent();
 			if (rentToRemove != null){
 				this.lib.returnMaterial(rentToRemove);
-				this.freeMatJlist.setListData(this.lib.getFreeMaterial());
-				this.rentedMatJlist.setListData(this.memberJlist.getSelectedValue().getRentMats());
+				this.refreshLists();
 			}
+		}
+	}
+	
+	private void incDate(){
+		DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		Date date;
+		try {
+			date = format.parse(this.date.getText());
+			Calendar c = Calendar.getInstance();
+			c.setTime(date); // Now use today date.
+			c.add(Calendar.DATE, 1); // Adding 5 days
+			this.date.setText(format.format(c.getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -146,10 +195,12 @@ public class LibraryWindow extends JFrame{
 	}
 	
 	private void drawTextField(){
-		Date string_date = new Date();
-		SimpleDateFormat dt = new SimpleDateFormat("dd-mm-yyyy");
-		this.date = new JTextField(dt.format(string_date));
+		Date date = new Date();
+		System.out.println(date.toString());
+		SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy");
+		this.date = new JTextField(dt.format(date));
 		this.date.setHorizontalAlignment(JTextField.CENTER);
+		this.date.setEditable(false);
 		this.southPanel.add(this.date);
 	}
 	
@@ -171,4 +222,8 @@ public class LibraryWindow extends JFrame{
 		this.centerPanel.add(rentedMatJlist);
 	}
 
+	private void refreshLists(){
+		this.freeMatJlist.setListData(this.lib.getFreeMaterial());
+		this.rentedMatJlist.setListData(this.memberJlist.getSelectedValue().getRentMats());
+	}
 }
