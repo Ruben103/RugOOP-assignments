@@ -1,11 +1,12 @@
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RentData {
+public class RentData implements Serializable{
 
-	private AvaibleMaterial mat;
+	private AvailableMaterial mat;
 	private Member mem;
 	
 	private Date startDate;
@@ -15,13 +16,13 @@ public class RentData {
 		this.setStartDate(null);
 	}
 	
-	public RentData(Member mem, AvaibleMaterial mat, Date startDate){
+	public RentData(Member mem, AvailableMaterial mat, Date startDate){
 		this.setMat(mat);
 		this.setMem(mem);
 		this.setStartDate(startDate);
 	}
 	
-	public RentData(Member mem, AvaibleMaterial mat, String startDate){
+	public RentData(Member mem, AvailableMaterial mat, String startDate){
 		this.setMat(mat);
 		this.setMem(mem);
 		DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -33,19 +34,24 @@ public class RentData {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public void freeMat(){
 		this.mat.setRent(null);
 	}	
 	
-	public void setMat(AvaibleMaterial mat) {
+	@Override
+	public String toString(){
+		DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		return this.getMem() + " rents " + this.getMat() 
+				+ " from: " + format.format(this.getStartDate());
+	}
+	public void setMat(AvailableMaterial mat) {
 		this.mat = mat;
 	}
 	public void setMem(Member mem) {
 		this.mem = mem;
 	}
-	public AvaibleMaterial getMat() {
+	public AvailableMaterial getMat() {
 		return mat;
 	}
 	public Member getMem() {

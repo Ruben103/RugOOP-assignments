@@ -4,6 +4,14 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +20,7 @@ import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -21,14 +30,6 @@ import javax.swing.event.ListSelectionListener;
 public class LibraryWindow extends JFrame{
 	
 	private final int NUMBER_BUTTONS = 8;
-	/*
-	private final int BUTTON_WIDTH = 120;
-	private final int BUTTON_HEIGHT = 30;
-	private final int TEXTFIELD_WIDTH = 100;
-	private final int PADDING_PANEL_NORTH = (WINDOW_WIDTH - 2*PADDING - 5*BUTTON_WIDTH - 4*SPACE_BETWEEN_BUTTONS) / 2;
-	private final int PADDING_PANEL_SOUTH = (WINDOW_WIDTH - 2*PADDING - TEXTFIELD_WIDTH + 
-												-3*BUTTON_WIDTH - 2*SPACE_BETWEEN_BUTTONS) / 2;
-	*/
 	
 	private final int WINDOW_WIDTH = 800;
 	private final int WINDOW_HEIGHT = 350;
@@ -43,8 +44,8 @@ public class LibraryWindow extends JFrame{
 	private JButton buttons[];
 	
 	private JList<Member> memberJlist;
-	private JList<AvaibleMaterial> freeMatJlist;
-	private JList<AvaibleMaterial> rentedMatJlist;
+	private JList<AvailableMaterial> freeMatJlist;
+	private JList<AvailableMaterial> rentedMatJlist;
 	
 	JPanel panel;
 	
@@ -56,7 +57,7 @@ public class LibraryWindow extends JFrame{
 	private Library lib;
 	
 	public LibraryWindow(Library _lib){
-		lib = new Library(_lib);
+		this.lib = new Library(_lib);
 		this.setWindowProperites();
 		
 		this.drawPanels();
@@ -70,7 +71,9 @@ public class LibraryWindow extends JFrame{
 		this.memberJlist.addListSelectionListener(new ListSelectionListener(){
 			@Override
 			public void valueChanged(ListSelectionEvent event){
-				rentedMatJlist.setListData(memberJlist.getSelectedValue().getRentMats());
+				Member selectedMember = LibraryWindow.this.memberJlist.getSelectedValue();
+				if (selectedMember != null)
+					LibraryWindow.this.rentedMatJlist.setListData(selectedMember.getRentMats());
 			}
 		});
 		
@@ -78,6 +81,7 @@ public class LibraryWindow extends JFrame{
 		this.buttons[0].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.printReport();
 			}
 		});
 		/*Rent button*/
@@ -98,24 +102,28 @@ public class LibraryWindow extends JFrame{
 		this.buttons[3].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.saveLibrary();
 			}
 		});
 		/*Restore button*/
 		this.buttons[4].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.restoreLibrary();
 			}
 		});
 		/*New Member button*/
 		this.buttons[5].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.addNewMember();
 			}
 		});
 		/*New Book button*/
 		this.buttons[6].addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				LibraryWindow.this.addNewBook();
 			}
 		});
 		
@@ -129,7 +137,92 @@ public class LibraryWindow extends JFrame{
 		
 		this.drawPanel();
 	}
+
+	private void restoreLibrary(){
+	      try
+	      {
+	         FileInputStream fileIn = new FileInputStream("lib.obj");
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         this.lib = (Library) in.readObject();
+	         in.close();
+	         fileIn.close();
+	         this.refreshLists();
+	         JOptionPane.showMessageDialog(null, "Library restored from lib.obj");
+	      }catch(IOException i)
+	      {
+	    	  System.out.println(i);
+	    	  JOptionPane.showMessageDialog(null, "Something went wrong...");
+	      } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+	    	  System.out.println(e);
+	    	  JOptionPane.showMessageDialog(null, "Something went wrong...");
+		}
+	}
 	
+	private void saveLibrary(){
+	    try{
+	         FileOutputStream fileOut =
+	         new FileOutputStream("lib.obj");
+	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         out.writeObject(this.lib);
+	         out.close();
+	         fileOut.close();
+	         JOptionPane.showMessageDialog(null, "Library saved in lib.obj");
+	     }catch(IOException i)
+	     {
+	    	 System.out.println(i);
+	    	JOptionPane.showMessageDialog(null, "Something went wrong...");
+	     }
+	}
+	
+	private void addNewBook(){
+		NewMaterialDialog matDialog = new NewMaterialDialog(this.lib);
+		matDialog.setVisible(true);
+		this.disableButtons();
+		matDialog.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	LibraryWindow.this.refreshLists();
+		    	LibraryWindow.this.enableButtons();
+		    }
+		});
+	}
+	
+	private void addNewMember(){
+		NewMemberDialog memberDialog = new NewMemberDialog(this.lib);
+		memberDialog.setVisible(true);
+		this.disableButtons();
+		memberDialog.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	LibraryWindow.this.refreshLists();
+		    	LibraryWindow.this.enableButtons();
+		    }
+		});
+	}
+	
+	private void printReport(){
+		String report = "Members:\n";
+		for (Member mem : this.lib.getMembers()){
+			report += mem+"\n";
+		}
+		report += "\nAll material:\n";
+		for (AvailableMaterial mat : this.lib.getMaterials()){
+			report += mat+"\n";
+		}
+		report += "\nAvaible material:\n";
+		for (AvailableMaterial mat : this.lib.getFreeMaterial()){
+			report += mat+"\n";
+		}
+		report += "\nRenting situation:\n";
+		for (Member mem : this.lib.getMembers()){
+			for (RentData rent : mem.getRents())
+				report += rent+"\n";
+		}
+		this.disableButtons();
+		JOptionPane.showMessageDialog(this, report, "Report", JOptionPane.PLAIN_MESSAGE);
+		this.enableButtons();
+	}
 	
 	private void makeRent(){
 		if (this.memberJlist.getSelectedValue() != null && this.freeMatJlist.getSelectedValue() != null){
@@ -143,7 +236,7 @@ public class LibraryWindow extends JFrame{
 	
 	private void makeReturn(){
 		Member mem = this.memberJlist.getSelectedValue();
-		AvaibleMaterial mat = this.rentedMatJlist.getSelectedValue();
+		AvailableMaterial mat = this.rentedMatJlist.getSelectedValue();
 		if (mem != null && mat  != null){
 			RentData rentToRemove = mat.getRent();
 			if (rentToRemove != null){
@@ -159,8 +252,8 @@ public class LibraryWindow extends JFrame{
 		try {
 			date = format.parse(this.date.getText());
 			Calendar c = Calendar.getInstance();
-			c.setTime(date); // Now use today date.
-			c.add(Calendar.DATE, 1); // Adding 5 days
+			c.setTime(date);
+			c.add(Calendar.DATE, 1);
 			this.date.setText(format.format(c.getTime()));
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -215,15 +308,28 @@ public class LibraryWindow extends JFrame{
 		this.memberJlist = new JList<Member>(lib.getMembers());
 		this.centerPanel.add(memberJlist);
 		
-		this.freeMatJlist = new JList<AvaibleMaterial>(this.lib.getFreeMaterial());
+		this.freeMatJlist = new JList<AvailableMaterial>(this.lib.getFreeMaterial());
 		this.centerPanel.add(freeMatJlist);
 		
-		this.rentedMatJlist = new JList<AvaibleMaterial>();
+		this.rentedMatJlist = new JList<AvailableMaterial>();
 		this.centerPanel.add(rentedMatJlist);
 	}
 
-	private void refreshLists(){
+	public void refreshLists(){
 		this.freeMatJlist.setListData(this.lib.getFreeMaterial());
-		this.rentedMatJlist.setListData(this.memberJlist.getSelectedValue().getRentMats());
+		if (this.memberJlist.getSelectedValue() != null)
+			this.rentedMatJlist.setListData(this.memberJlist.getSelectedValue().getRentMats());
+		this.memberJlist.setListData(this.lib.getMembers());
 	}
+	
+	private void disableButtons(){
+		for (JButton button : this.buttons)
+			button.setEnabled(false);
+	}
+	
+	private void enableButtons(){
+		for (JButton button : this.buttons)
+			button.setEnabled(true);
+	}
+	
 }

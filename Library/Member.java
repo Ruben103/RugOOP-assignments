@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Member {
+public class Member implements Serializable{
 	
 	private String name;
 	private String surname;
@@ -27,9 +28,9 @@ public class Member {
 		return this.getSurname() + " " + this.getName();
 	}
 	
-	public Vector<AvaibleMaterial> getRentMats(){
-		Vector<AvaibleMaterial> rentMat = new Vector<AvaibleMaterial>();
-		for (RentData rent : this.rents)
+	public Vector<AvailableMaterial> getRentMats(){
+		Vector<AvailableMaterial> rentMat = new Vector<AvailableMaterial>();
+		for (RentData rent : this.getRents())
 			rentMat.addElement(rent.getMat());
 		return rentMat;
 	}

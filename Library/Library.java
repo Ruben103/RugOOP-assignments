@@ -1,49 +1,37 @@
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Vector;
 
-public class Library extends Observable{
+public class Library extends Observable implements Serializable{
 
 	private Vector<Member> members;
-	private Vector<AvaibleMaterial> materials;
-	
-
-	/* We don't need to keep reservations, because we have this 
-	 * information also in Member class and it would be rendondant
-	private Vector<RentData> rents;*/
+	private Vector<AvailableMaterial> materials;
 	private Vector<RentData> rentHistory;
-	private Vector<RentData> reservations;
-	
-	
 	
 	public Library(){
 		members = new Vector<Member>();
-		materials = new Vector<AvaibleMaterial>();
+		materials = new Vector<AvailableMaterial>();
 		rentHistory = new Vector<RentData>();
-		reservations = new Vector<RentData>();
-		//rents = new Vector<RentData>();
 	} 
 
-	public Library(Vector<Member> members, Vector<AvaibleMaterial> materials, 
-					Vector<RentData> rentHistory, Vector<RentData> reservations){
+	public Library(Vector<Member> members, Vector<AvailableMaterial> materials, 
+					Vector<RentData> rentHistory){
 		this.setMembers(members);
 		this.setMaterials(materials);
 		this.setRentHistory(rentHistory);
-		this.setReservations(reservations);
-		//this.setRents(rents);
 	}
 	
 	public Library(Library _lib){
-		this(_lib.getMembers(), _lib.getMaterials(), _lib.getRentHistory(), _lib.getReservations());
+		this(_lib.getMembers(), _lib.getMaterials(), _lib.getRentHistory());
 	}
 	
 	public void sendNotificationToObs(String message){
 		setChanged();
-		notifyObservers(message);
+		this.notifyObservers(message);
 	}
 	
-	public void addMaterial(AvaibleMaterial mat){
+	public void addMaterial(AvailableMaterial mat){
 		materials.add(mat.getPrivateId(), mat);
 		this.sendNotificationToObs(this.materialToString());
 	}
@@ -56,7 +44,7 @@ public class Library extends Observable{
 	public String materialToString(){
 		String buff = "";
 		int count = 1;
-		for (AvaibleMaterial mat : materials){
+		for (AvailableMaterial mat : this.getMaterials()){
 			buff+= count+") "+mat+"\n";
 			count++;
 		}
@@ -66,77 +54,40 @@ public class Library extends Observable{
 	public String memberToString(){
 		String buff = "";
 		int count = 1;
-		for (Member mem : this.members){
+		for (Member mem : this.getMembers()){
 			buff+= count+") "+mem+"\n";
 			count++;
 		}
 		return buff;
 	}
 	
-	
-	/*public RentData returnRent(Member mem, AvaibleMaterial mat){
-		for (RentData rent : this.rents)
-			if (rent.getMat() == mat && rent.getMem() == mem)
-				return rent;
-		return null;
-	}*/
-	
 	public void returnMaterial(RentData rent){
 		rent.setEndDate(new Date());
 		(rent.getMem()).returnMaterial(rent);
-		//this.rents.remove(rent);
 		rent.freeMat();
-
 		rentHistory.add(rent);
 	}
 	
-	public boolean rentingMaterial(Member mem, AvaibleMaterial mat, String startDate){
-		if (!mat.isAvaible()) return false;
-		RentData rent = new RentData(mem, mat, startDate);
-		mem.addRent(rent);
-		mat.setRent(rent); 
-		//this.rents.add(rent.getMat().getPrivateId(), rent);
-		return true;
-	}
-	
-	public boolean rentingMaterial(Member mem, AvaibleMaterial mat, Date startDate){
+	public boolean rentingMaterial(Member mem, AvailableMaterial mat, String startDate){
 		if (!mat.isAvaible()) return false;
 		RentData rent = new RentData(mem, mat, startDate);
 		mem.addRent(rent);
 		mat.setRent(rent);
-		//this.rents.add(rent.getMat().getPrivateId(), rent);
 		return true;
 	}
-	
-	public Vector<AvaibleMaterial> getFreeMaterial(){
-		Vector<AvaibleMaterial> freeMat = new Vector<AvaibleMaterial> ();
-		for (AvaibleMaterial mat : this.getMaterials()){
+
+	public Vector<AvailableMaterial> getFreeMaterial(){
+		Vector<AvailableMaterial> freeMat = new Vector<AvailableMaterial> ();
+		for (AvailableMaterial mat : this.getMaterials()){
 			if (mat.isAvaible()) freeMat.addElement(mat);
 		}
 		return freeMat;	
-	}
-	
-	
-	public boolean makeReservation(Member mem, AvaibleMaterial mat, String startDate){
-		if (mat.isAvaible()) return false;
-		
-		RentData rent = new RentData(mem, mat, startDate);
-		//reservations.add(rent);
-		return true;
-	}
-	
-	public boolean makeReservation(Member mem, AvaibleMaterial mat){
-		if (mat.isAvaible()) return false;
-		
-		RentData rent = new RentData(mem, mat, new Date());
-		//reservations.add(rent);
-		return true;
 	}
 
 	public Vector<Member> getMembers() {
 		return members;
 	}
-	public Vector<AvaibleMaterial> getMaterials() {
+	public Vector<AvailableMaterial> getMaterials() {
 		return materials;
 	}
 
@@ -148,29 +99,11 @@ public class Library extends Observable{
 		this.rentHistory = rentHistory;
 	}
 
-	public Vector<RentData> getReservations() {
-		return reservations;
-	}
-
-	public void setReservations(Vector<RentData> reservations) {
-		this.reservations = reservations;
-	}
-
 	public void setMembers(Vector<Member> members) {
 		this.members = members;
 	}
 
-	public void setMaterials(Vector<AvaibleMaterial> materials) {
+	public void setMaterials(Vector<AvailableMaterial> materials) {
 		this.materials = materials;
 	}
-	/*
-	public Vector<RentData> getRents() {
-		return rents;
-	}
-
-	public void setRents(Vector<RentData> rents) {
-		this.rents = rents;
-	}
-	*/
-	
 }
