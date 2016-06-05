@@ -43,17 +43,17 @@ public abstract class AbstractUndoableEdit {
 		// TODO Auto-generated method stub
 		this.getStackOperation().push(op);
 	}
+	
+	/*AUTOgenerate setters and getters*/
 	public GraphModel getGraphModel() {
 		return graphModel;
 	}
 	public void setGraphModel(GraphModel graphModel) {
 		this.graphModel = graphModel;
 	}
-
 	public Stack<Operation> getStackOperation() {
 		return stackOperation;
 	}
-
 	public void setStackOperation(Stack<Operation> stackOperation) {
 		this.stackOperation = stackOperation;
 	}
