@@ -8,12 +8,20 @@ import java.util.ArrayList;
 
 public class GraphModel {
 	
-	ArrayList<GraphVertex> vertexes;
-	ArrayList<GraphEdge> edges;
+	private ArrayList<GraphVertex> vertexes;
+	private ArrayList<GraphEdge> edges;
+	private UndoManager undoManager;
+	private RedoManager redoManager;
 	
-	public GraphModel(String nameFile) throws IOException{
+	public GraphModel(){
 		this.vertexes = new ArrayList<GraphVertex>();
 		this.edges = new ArrayList<GraphEdge>();
+		this.undoManager = new UndoManager(this);
+		this.redoManager = new RedoManager(this);
+	}
+	
+	public GraphModel(String nameFile) throws IOException{
+		this();
 		this.loadFromFile(nameFile);
 	}
 	
@@ -33,8 +41,31 @@ public class GraphModel {
 		this.getVertexes().remove(vertex);
 	}
 	
-	public void removeEdge(){
-		this.getEdges().remove(edges);
+	public void removeEdge(GraphEdge edge){
+		this.getEdges().remove(edge);
+	}
+	
+	public void perfromOperation(Operation op){
+		// TODO Auto-generated method stub
+		switch (op.getOperation()){
+			case ADD_VERTEX:{
+				this.addVertex(op.getVertex());
+			}
+			case REMOVE_VERTEX:{
+				for (GraphEdge edge : this.getEdges()){
+					if (edge.containsVertex(op.getVertex()))
+						op.getEdges().add(edge);
+				}
+				this.removeVertex(op.getVertex());
+			}
+			case ADD_EDGE:{
+				this.addEdge(op.getEdges().get(0));
+			}
+			case REMOVE_EDGE:{
+				this.removeEdge(op.getEdges().get(0));
+			}
+		}
+		this.getUndoManager().addOperation(op);
 	}
 	
 	public void saveGraph(String nameFile) throws IOException{
@@ -46,7 +77,7 @@ public class GraphModel {
 								vertex.getName() + "\n");
 			}
 			for (GraphEdge edge : this.getEdges()){
-				graphFile.write(this.getVertexIndex(edge.getV1()) + " " + this.getVertexIndex(edge.getV2())+"\n");
+				graphFile.write(this.getIndexOfVertex(edge.getV1()) + " " + this.getIndexOfVertex(edge.getV2())+"\n");
 			}
 			graphFile.close();
 	}
@@ -62,8 +93,10 @@ public class GraphModel {
 				line = loadFile.readLine();
 				infoLine = line.split(" ");
 				String nameVertex = "";
-				for (int j = 4; j < infoLine.length; j++)
+				for (int j = 4; j < infoLine.length; j++){
+					if (j != 4) nameVertex += " ";
 					nameVertex += infoLine[j];
+				}
 				this.addVertex(new GraphVertex(nameVertex,
 											   new Rectangle(Integer.parseInt(infoLine[0]),
 													   		 Integer.parseInt(infoLine[1]),
@@ -89,7 +122,7 @@ public class GraphModel {
 	}*/
 	
 	
-	private int getVertexIndex(GraphVertex vertex){
+	private int getIndexOfVertex(GraphVertex vertex){
 		for (int i = 0; i < this.getVertexes().size(); i++){
 			if (this.getVertexes().get(i).getName().equals(vertex.getName()))
 				return i;
@@ -110,5 +143,18 @@ public class GraphModel {
 	public void setEdges(ArrayList<GraphEdge> edges) {
 		this.edges = edges;
 	}
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+	public void setUndoManager(UndoManager undoManager) {
+		this.undoManager = undoManager;
+	}
+	public RedoManager getRedoManager() {
+		return redoManager;
+	}
+	public void setRedoManager(RedoManager redoManager) {
+		this.redoManager = redoManager;
+	}
+	
 
 }

@@ -20,9 +20,7 @@ public class GraphVertex {
 		this.name = DEFAULT_NAME;
 		this.rect = new Rectangle(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
-	
 
-	
 	/*AUTOgenerate setters and getters*/
 	public String getName() {
 		return name;
@@ -36,7 +34,4 @@ public class GraphVertex {
 	public void setRect(Rectangle rect) {
 		this.rect = rect;
 	}
-	
-	
-
 }
