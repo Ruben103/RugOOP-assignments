@@ -1,7 +1,7 @@
 
 public class GraphEdge {
 
-	GraphVertex v1, v2;
+	private GraphVertex v1, v2;
 	
 	public GraphEdge(GraphVertex v1, GraphVertex v2){
 		this.v1 = v1;
@@ -15,6 +15,10 @@ public class GraphEdge {
 		return false;
 	}
 
+	@Override
+	public String toString(){
+		return this.getV1().getName()+"--"+this.getV2().getName();
+	}
 	
 	/*AUTOgenerate setters and getters*/
 	public GraphVertex getV1() {
