@@ -7,9 +7,9 @@ public class GraphVertex {
 	private Rectangle rect;
 	
 	/*Default constant*/
-	private static final String DEFAULT_NAME = "VERTEX";
-	private static final int DEFAULT_WIDTH = 100;
-	private static final int DEFAULT_HEIGHT = 75;
+	public static final String DEFAULT_NAME = "VERTEX";
+	public static final int DEFAULT_WIDTH = 100;
+	public static final int DEFAULT_HEIGHT = 75;
 	
 	public GraphVertex(){
 		this.name = DEFAULT_NAME;

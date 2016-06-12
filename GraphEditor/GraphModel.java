@@ -1,7 +1,8 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Observable;
 
-public class GraphModel {
+public class GraphModel extends Observable{
 	
 	private ArrayList<GraphVertex> vertexes;
 	private ArrayList<GraphEdge> edges;
@@ -9,6 +10,7 @@ public class GraphModel {
 	private RedoManager redoManager;
 	
 	public GraphModel(){
+		
 		this.vertexes = new ArrayList<GraphVertex>();
 		this.edges = new ArrayList<GraphEdge>();
 		this.undoManager = new UndoManager(this);
@@ -22,22 +24,30 @@ public class GraphModel {
 	
 	public void addEdge(GraphEdge edge){
 		this.getEdges().add(edge);
+		this.sendNotificationToObs("Add edge, from:" + edge.getV1().getName() + " to:"
+													 + edge.getV2().getName());
 	}
 
 	public void addVertex(GraphVertex vertex){
 		this.getVertexes().add(vertex);
+		this.sendNotificationToObs("Add vertex, name :" + vertex.getName());
 	}
 	
 	public void removeVertex(GraphVertex vertex){
+		String vertexName = vertex.getName();
 		for (GraphEdge edge : this.getEdges()){
 			if (edge.containsVertex(vertex))
 				this.getEdges().remove(edge);
 		}
 		this.getVertexes().remove(vertex);
+		this.sendNotificationToObs("Remove vertex, name :" + vertexName);
 	}
 	
 	public void removeEdge(GraphEdge edge){
+		String v1Name = edge.getV1().getName(), v2Name  = edge.getV2().getName();
 		this.getEdges().remove(edge);
+		this.sendNotificationToObs("Remove edge, from:" + v1Name + " to:"
+				 									    + v2Name);
 	}
 	
 	public void perfromOperation(Operation op){
@@ -45,6 +55,7 @@ public class GraphModel {
 		switch (op.getOperation()){
 			case ADD_VERTEX:{
 				this.addVertex(op.getVertex());
+				break;
 			}
 			case REMOVE_VERTEX:{
 				for (GraphEdge edge : this.getEdges()){
@@ -52,12 +63,15 @@ public class GraphModel {
 						op.getEdges().add(edge);
 				}
 				this.removeVertex(op.getVertex());
+				break;
 			}
 			case ADD_EDGE:{
 				this.addEdge(op.getEdges().get(0));
+				break;
 			}
 			case REMOVE_EDGE:{
 				this.removeEdge(op.getEdges().get(0));
+				break;
 			}
 		}
 		this.getUndoManager().addOperation(op);
@@ -119,6 +133,11 @@ public class GraphModel {
 				return this.getEdges().indexOf(edge);
 		}
 		return -1;
+	}
+	
+	public void sendNotificationToObs(String message){
+		setChanged();
+		this.notifyObservers(message);
 	}
 	
 	/*AUTOgenerate setters and getters*/
