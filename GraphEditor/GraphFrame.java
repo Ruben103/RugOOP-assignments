@@ -64,13 +64,15 @@ public class GraphFrame extends JFrame{
 		this.undo.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				
+				if (GraphFrame.this.model.getUndoManager().stackOperation.isEmpty())
+					GraphFrame.this.undo.setEnabled(false);
 			}
 		});
 		this.redo.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				
+				if (GraphFrame.this.model.getRedoManager().stackOperation.isEmpty())
+					GraphFrame.this.redo.setEnabled(false);
 			}
 		});
 		
@@ -144,6 +146,7 @@ public class GraphFrame extends JFrame{
 		    public void windowClosed(WindowEvent e) {
 		    	//GraphFrame.this.refreshLists();
 		    	GraphFrame.this.disEnButtons(true);
+		    	GraphFrame.this.undo.setEnabled(true);
 		    }
 		});
 	}
@@ -157,6 +160,7 @@ public class GraphFrame extends JFrame{
 		    public void windowClosed(WindowEvent e) {
 		    	//GraphFrame.this.refreshLists();
 		    	GraphFrame.this.disEnButtons(true);
+		    	GraphFrame.this.undo.setEnabled(true);
 		    }
 		});
 	}
@@ -165,8 +169,6 @@ public class GraphFrame extends JFrame{
 		this.getBtnDelNode().setEnabled(command);
 		this.getBtnNewEdge().setEnabled(command);
 		this.getBtnDelNode().setEnabled(command);
-		this.getUndo().setEnabled(command);
-		this.getRedo().setEnabled(command);
 	}
 	
 	public JMenu getMenuFile() {

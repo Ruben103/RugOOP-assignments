@@ -10,7 +10,6 @@ public class GraphModel extends Observable{
 	private RedoManager redoManager;
 	
 	public GraphModel(){
-		
 		this.vertexes = new ArrayList<GraphVertex>();
 		this.edges = new ArrayList<GraphEdge>();
 		this.undoManager = new UndoManager(this);
