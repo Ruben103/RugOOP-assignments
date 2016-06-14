@@ -133,7 +133,7 @@ public class NewGraphVertexDialog extends JDialog {
 		this.txtWidth = new JTextField();
 		this.centerPanel.add(this.txtWidth);
 		
-		JLabel lblHeight = new JLabel("Vertex Height (default: " + GraphVertex.DEFAULT_HEIGHT + "):");
+		JLabel lblHeight = new JLabel("Vertex Height:");
 		this.centerPanel.add(lblHeight);
 		this.txtHeight = new JTextField();
 		this.centerPanel.add(this.txtHeight);

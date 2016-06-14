@@ -131,7 +131,8 @@ public class GraphFrame extends JFrame{
 							+ "CTRL+S : save;\n"
 							+ "CTRL+L : load;\n"
 							+ "CTRL+U : undo;\n"
-							+ "CTRL+Y : redo;\n";
+							+ "CTRL+Y : redo;\n"
+							+ "CTRL+D : remove vertex.\n";
 				JOptionPane.showMessageDialog(null, msg);
 			}
 		});
@@ -152,17 +153,35 @@ public class GraphFrame extends JFrame{
 					return;
                 }
 				if ((e.getKeyCode() == KeyEvent.VK_L) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-					GraphFrame.this.loadGraph();;
+					GraphFrame.this.loadGraph();
 					return;
                 }
 				if ((e.getKeyCode() == KeyEvent.VK_U) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-					if (!GraphFrame.this.model.getUndoManager().getStackOperation().isEmpty())
-						GraphFrame.this.model.getUndoManager().undoOperation();
+					if (!GraphFrame.this.model.getUndoManager().getStackOperation().isEmpty()){
+						GraphFrame.this.redo.setEnabled(true);
+						if (GraphFrame.this.model.getUndoManager().stackOperation.isEmpty())
+							GraphFrame.this.undo.setEnabled(false);
+					}
 					return;
                 }
 				if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
-					if (!GraphFrame.this.model.getRedoManager().getStackOperation().isEmpty())
-						GraphFrame.this.model.getRedoManager().redoOperation();;
+					if (!GraphFrame.this.model.getRedoManager().getStackOperation().isEmpty()){
+						GraphFrame.this.model.getRedoManager().redoOperation();
+						GraphFrame.this.model.getUndoManager().undoOperation();
+						GraphFrame.this.undo.setEnabled(true);
+						if (GraphFrame.this.model.getRedoManager().stackOperation.isEmpty())
+							GraphFrame.this.redo.setEnabled(false);
+					}
+                }
+				if ((e.getKeyCode() == KeyEvent.VK_D) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+					GraphVertex vertexToDelete = GraphFrame.this.model.getSelectedVertex();
+					if (vertexToDelete != null){
+						GraphFrame.this.model.perfromOperation(new Operation(Operation.OperationType.REMOVE_VERTEX, 
+																vertexToDelete));
+						GraphFrame.this.undo.setEnabled(true);
+				    	GraphFrame.this.redo.setEnabled(false);
+						GraphFrame.this.graphPanel.repaint();
+					}
 					return;
                 }
 			}
@@ -282,8 +301,6 @@ public class GraphFrame extends JFrame{
 					JOptionPane.showMessageDialog(null, error);
 					return;
 				}
-				this.model.setRedoManager(new RedoManager(this.model));
-				this.model.setUndoManager(new UndoManager(this.model));
 				this.graphPanel.setModel(this.model);
 				this.graphPanel.repaint();
 			}catch (IOException e) {

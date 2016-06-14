@@ -15,8 +15,6 @@ public class GraphPanel extends JPanel implements Observer {
 	public GraphPanel(GraphModel _graph){
 		selCon = new SelectionController(_graph, this);
 		this.setModel(_graph);
-		this.graph.addObserver(this);
-		
 		
 		this.addMouseListener(selCon);
 		this.addMouseMotionListener(selCon);
@@ -88,5 +86,6 @@ public class GraphPanel extends JPanel implements Observer {
 	public void setModel(GraphModel _graph){
 		this.graph = _graph;
 		this.selCon.setModel(_graph);
+		this.graph.addObserver(this);
 	}
 }
