@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/*Simple graph parser, doesn't support the attributes of the nodes*/
 public class GraphVizGraphParser extends GraphParser {
 
 	@Override
@@ -97,7 +96,6 @@ public class GraphVizGraphParser extends GraphParser {
 			}
 			return vertexString;
 		}
-		System.out.println("---------- New vertex" + vertexString + "----------");
 		vertexString = vertexString.replace("]", "");
 		String[] vertexInfo = vertexString.split(" \\[");
 		GraphVertex vertexToAdd = new GraphVertex(vertexInfo[0]);
@@ -123,13 +121,11 @@ public class GraphVizGraphParser extends GraphParser {
 				continue;
 			}
 		}
-		System.out.println(vertexToAdd.getName() + " x:" + x +" y:" + y + " width:" + width + " height:" + height);
 		vertexToAdd.setRect(new Rectangle(x.equals("") ? 0 : Integer.parseInt(x),
 										  y.equals("") ? 0 : Integer.parseInt(y),
 										  width.equals("") ? GraphVertex.DEFAULT_WIDTH : Integer.parseInt(width),
 										  height.equals("") ? GraphVertex.DEFAULT_HEIGHT : Integer.parseInt(height))
 							);
-		System.out.println(vertexToAdd.getName() +" "+ vertexToAdd.getRect());
 		graph.addVertex(vertexToAdd);
 		return vertexToAdd.getName();
 	}

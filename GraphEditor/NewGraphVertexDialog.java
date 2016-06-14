@@ -26,7 +26,6 @@ public class NewGraphVertexDialog extends JDialog {
 	private JTextField txtWidth;
 	private JTextField txtHeight;
 	
-	
 	private JButton btnSubmit;
 	private JButton btnExit;
 	
@@ -68,24 +67,23 @@ public class NewGraphVertexDialog extends JDialog {
 		int x = this.txtX.getText().equals("") ? 0 : Integer.parseInt(this.txtX.getText());
 		int y = this.txtY.getText().equals("") ? 0 : Integer.parseInt(this.txtY.getText());
 		
-		if (y >= 0 && x >= 0 && width >= 0 && height >= 0 && graph.getVertexOfName(name) == null){
-			//Add vertex
+		if (y >= 0 && y< GraphFrame.WINDOW_HEIGHT && x >= 0 && x < GraphFrame.WINDOW_WIDTH
+				   && width >= 0 && height >= 0 && graph.getVertexOfName(name) == null){
 			width = width != 0 ? width : GraphVertex.DEFAULT_WIDTH;
 			height = height != 0 ? height : GraphVertex.DEFAULT_HEIGHT;
 			name = name.equals("") ? GraphVertex.DEFAULT_NAME : name;
-			System.out.println(height);
 			graph.perfromOperation(new Operation(Operation.OperationType.ADD_VERTEX, 
 												 new GraphVertex(name, new Rectangle(x, y, width, height))));
 		}else{
-			//Generate string error
-			String error = "";/* "Invalid: " + x < 0 ? "\nX < 0" : "" + 
-							y < 0 ? "\nY < 0" : "" + 
-							width < 0 ? "\nwidth < 0" : "" +
-							height < 0 ? "\nheight < 0" : "" +
-							graph.getIndexOfVertex(graph.getVertexOfName(name)) < 0 ? "\nname already used" : "";*/
+			String error =  "Invalid: " + (x < 0 || x > GraphFrame.WINDOW_WIDTH ? "\nValue of X has to be between 0 and " 
+							+ GraphFrame.WINDOW_WIDTH : "") + 
+							(y < 0 || y > GraphFrame.WINDOW_HEIGHT ? "\nValue of Y has to be between 0 and " 
+							+ GraphFrame.WINDOW_HEIGHT : "") + 
+							(width < 0 ? "\nwidth < 0" : "") +
+							(height < 0 ? "\nheight < 0" : "") +
+							(graph.getIndexOfVertex(graph.getVertexOfName(name)) < 0 ? "\nname already used" : "");
 			JOptionPane.showMessageDialog(null, error);
-		}
-		
+		}	
 	}
 	
 	private void clearTextField(){
@@ -125,12 +123,10 @@ public class NewGraphVertexDialog extends JDialog {
 		this.txtX = new JTextField();
 		this.centerPanel.add(this.txtX);
 		
-		
 		JLabel lblY = new JLabel("Coordinate Y:");
 		this.centerPanel.add(lblY);
 		this.txtY = new JTextField();
 		this.centerPanel.add(this.txtY);
-		
 		
 		JLabel lblWidth = new JLabel("Vertex Width:");
 		this.centerPanel.add(lblWidth);

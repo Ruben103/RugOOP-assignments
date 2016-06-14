@@ -54,7 +54,7 @@ public class ChangeVertexNameDialog extends JDialog{
 					String error = "Name already used!";
 					JOptionPane.showMessageDialog(null, error);
 				}
-				ChangeVertexNameDialog.this.clearTextField();
+				ChangeVertexNameDialog.this.dispose();
 				panel.repaint();
 			}
 		});

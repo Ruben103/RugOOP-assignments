@@ -112,4 +112,8 @@ public class SelectionController implements MouseListener, MouseMotionListener{
 		this.moving = moving;
 	}
 	
+	public void setModel(GraphModel _graph){
+		this.model = _graph;
+	}
+	
 }

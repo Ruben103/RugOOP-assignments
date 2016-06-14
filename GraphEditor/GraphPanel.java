@@ -13,10 +13,10 @@ public class GraphPanel extends JPanel implements Observer {
 	private SelectionController selCon;
 
 	public GraphPanel(GraphModel _graph){
+		selCon = new SelectionController(_graph, this);
 		this.setModel(_graph);
 		this.graph.addObserver(this);
 		
-		selCon = new SelectionController(graph, this);
 		
 		this.addMouseListener(selCon);
 		this.addMouseMotionListener(selCon);
@@ -26,7 +26,7 @@ public class GraphPanel extends JPanel implements Observer {
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
 		this.repaint();
-		System.out.println("Repaint:" + arg);
+		System.out.println("update: " + arg);
 	}
 	
 	public void paintComponent(Graphics g){
@@ -60,7 +60,6 @@ public class GraphPanel extends JPanel implements Observer {
 	private void paintEdge(Graphics g){
 		g.setColor(Color.black);
 		for(GraphEdge edge : this.graph.getEdges()){
-			System.out.println("edge edge");
 			Rectangle rect1 = edge.getV1().getRect();
 			Rectangle rect2 = edge.getV2().getRect();
 			g.drawLine(rect1.x + (rect1.width/2) , rect1.y + (rect1.height/2), 
@@ -88,5 +87,6 @@ public class GraphPanel extends JPanel implements Observer {
 	
 	public void setModel(GraphModel _graph){
 		this.graph = _graph;
+		this.selCon.setModel(_graph);
 	}
 }
