@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 public class UndoManager extends AbstractUndoableEdit {
 
 	public UndoManager(GraphModel graphModel) {
@@ -5,7 +7,7 @@ public class UndoManager extends AbstractUndoableEdit {
 	}
 	
 	public void undoOperation(){
-		Operation op = this.getStackOperation().peek();
+		Operation op = this.getStackOperation().pop();
 		this.getGraphModel().getRedoManager().addOperation(this.doOperation(op));
 	}	
 	

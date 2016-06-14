@@ -63,16 +63,17 @@ public class NewGraphVertexDialog extends JDialog {
 	
 	private void addVertex(){
 		String name = this.txtName.getText();
-		int height = this.txtHeight.getText().equals("") ? 0 : Integer.parseInt(this.txtHeight.getText());
+		int height = this.txtHeight.getText().equals("")? 0 : Integer.parseInt(this.txtHeight.getText());
 		int width = this.txtWidth.getText().equals("") ? 0 : Integer.parseInt(this.txtWidth.getText());
 		int x = this.txtX.getText().equals("") ? 0 : Integer.parseInt(this.txtX.getText());
 		int y = this.txtY.getText().equals("") ? 0 : Integer.parseInt(this.txtY.getText());
 		
 		if (y >= 0 && x >= 0 && width >= 0 && height >= 0 && graph.getVertexOfName(name) == null){
 			//Add vertex
-			width = width == 0 ? width : GraphVertex.DEFAULT_WIDTH;
-			height = height == 0 ? height : GraphVertex.DEFAULT_HEIGHT;
+			width = width != 0 ? width : GraphVertex.DEFAULT_WIDTH;
+			height = height != 0 ? height : GraphVertex.DEFAULT_HEIGHT;
 			name = name.equals("") ? GraphVertex.DEFAULT_NAME : name;
+			System.out.println(height);
 			graph.perfromOperation(new Operation(Operation.OperationType.ADD_VERTEX, 
 												 new GraphVertex(name, new Rectangle(x, y, width, height))));
 		}else{

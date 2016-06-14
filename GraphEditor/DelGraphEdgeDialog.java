@@ -1,14 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -17,10 +15,9 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-public class NewGraphEdgeDialog extends JDialog {
+public class DelGraphEdgeDialog extends JDialog {
 	final int WIDTH_WINDOW = 400;
 	final int HEIGHT_WINDOW = 400;
 	
@@ -35,18 +32,18 @@ public class NewGraphEdgeDialog extends JDialog {
 	
 	private GraphModel graph;
 	
-	public NewGraphEdgeDialog(GraphModel _graph){
+	public DelGraphEdgeDialog(GraphModel _graph){
 		this.graph = _graph;
 		this.setWindow();
 		this.setPanel();
 		this.drawFields();
 		
-		this.btnSubmit = new JButton("Add edge");
+		this.btnSubmit = new JButton("Delete edge");
 		this.btnSubmit.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				NewGraphEdgeDialog.this.addEdge();
-				NewGraphEdgeDialog.this.clearTextField();
+				DelGraphEdgeDialog.this.removeEdge();
+				DelGraphEdgeDialog.this.clearTextField();
 			}
 		});
 		
@@ -54,14 +51,14 @@ public class NewGraphEdgeDialog extends JDialog {
 		this.btnExit.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				NewGraphEdgeDialog.this.dispose();
+				DelGraphEdgeDialog.this.dispose();
 			}
 		});
 		
 		this.cmbV1.addItemListener(new ItemListener(){
 	        public void itemStateChanged(ItemEvent e){
 	        	if(e.getStateChange() == ItemEvent.SELECTED) {
-	        		NewGraphEdgeDialog.this.updateComboV2(NewGraphEdgeDialog.this.cmbV1.getSelectedItem().toString());
+	        		DelGraphEdgeDialog.this.updateComboV2(DelGraphEdgeDialog.this.cmbV1.getSelectedItem().toString());
 	        	}
 	        }
 	    });
@@ -72,7 +69,7 @@ public class NewGraphEdgeDialog extends JDialog {
 		this.add(southPanel, BorderLayout.SOUTH);
 	}
 	
-	private void addEdge(){
+	private void removeEdge(){
 		String nameV1 = this.cmbV1.getSelectedItem().toString();
 		if (nameV1.equals("")){
 			String error = "First vertex is not seleceted!";
@@ -84,7 +81,8 @@ public class NewGraphEdgeDialog extends JDialog {
 		if (!nameV2.equals("")){
 			GraphVertex v1 = graph.getVertexOfName(nameV1);
 			GraphVertex v2 = graph.getVertexOfName(nameV2);
-			graph.perfromOperation(new Operation(Operation.OperationType.ADD_EDGE, new GraphEdge(v1, v2)));
+			graph.perfromOperation(new Operation(Operation.OperationType.REMOVE_EDGE,
+												this.graph.getEdges().get(this.graph.getIndexEdgeOfVertexes(v1, v2))));
 		}else{
 			//Generate string error
 			String error = "Second vertex is not seleceted!";
@@ -98,7 +96,7 @@ public class NewGraphEdgeDialog extends JDialog {
 		DefaultComboBoxModel<String> vertexes = new DefaultComboBoxModel<String>();
 		ArrayList<GraphVertex> adjVertexes = graph.getAdjVertexes(v1);
 		for (GraphVertex vertex : graph.getVertexes()){
-			if (!adjVertexes.contains(vertex) && !vertex.getName().equals(nameV1))
+			if (adjVertexes.contains(vertex))
 				vertexes.addElement(vertex.getName());
 		}
 		if (vertexes.getSize() == 0)
@@ -109,12 +107,12 @@ public class NewGraphEdgeDialog extends JDialog {
 	private void clearTextField(){
 		DefaultComboBoxModel<String> vertexes = new DefaultComboBoxModel<String>();
 		for (GraphVertex vertex : graph.getVertexes()){
-			if (this.graph.getAdjVertexes(vertex).size() != this.graph.getVertexes().size() - 1)
+			if (this.graph.getAdjVertexes(vertex).size() != 0)
 				vertexes.addElement(vertex.getName());
 		}
 		
 		if (vertexes.getSize() == 0){
-			vertexes.addElement("The graph is connected");
+			vertexes.addElement("There are not edges");
 			this.cmbV1.setModel(vertexes);
 			this.cmbV2.setModel(new DefaultComboBoxModel<String>());
 			this.btnSubmit.setEnabled(false);
@@ -136,7 +134,7 @@ public class NewGraphEdgeDialog extends JDialog {
 	}
 	
 	private void setWindow(){
-		this.setTitle("New Edge");
+		this.setTitle("Delete Edge");
 		this.setResizable(false);
 		this.setSize(WIDTH_WINDOW, HEIGHT_WINDOW);
 		this.getContentPane().setLayout(new BorderLayout());

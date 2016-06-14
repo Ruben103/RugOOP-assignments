@@ -4,8 +4,12 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -15,17 +19,17 @@ import javax.swing.border.EmptyBorder;
 public class GraphFrame extends JFrame{
 
 	private static final int WINDOW_WIDTH = 900;
-	private static final int WINDOW_HEIGHT = 800;
+	private static final int WINDOW_HEIGHT = 700;
 	private static final String TITLE_NAME = "Graph Editor";
 	
 	private JPanel northPanel;
-	private JPanel southPanel;
 	private JPanel centerPanel;
 
 	private JMenuBar menuBar;
-	private JMenu menuFile, menuEdit, menuWindow;
+	private JMenu menuFile, menuInfo;
+	private JMenuItem mnSave, mnLoad, mnCredits;
 	private JToolBar tb;
-	private JButton btnNewVertex, btnDelNode, btnNewEdge, undo, redo;
+	private JButton btnNewVertex, btnDelNode, btnNewEdge, btnDelEdge, undo, redo;
 	private GraphPanel graphPanel;
 
 	private GraphModel model;
@@ -47,23 +51,39 @@ public class GraphFrame extends JFrame{
 				GraphFrame.this.addVertex();
 			}
 		});
-		/*this.delNode.addActionListener(new ActionListener() { 
-			GraphVertex selectedVertex = GraphFrame.this.model.vertexes.getSelectedValue();
-			@Override	
+		this.btnDelNode.addActionListener(new ActionListener() { 
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				GraphFrame.this.model.removeVertex();
+				GraphVertex vertexToDelete = GraphFrame.this.model.getSelectedVertex();
+				if (vertexToDelete != null)
+					GraphFrame.this.model.perfromOperation(new Operation(Operation.OperationType.REMOVE_VERTEX, 
+															vertexToDelete));
+				else{
+					String error = "Select a vertex!";
+					JOptionPane.showMessageDialog(null, error);
+				}
+				GraphFrame.this.graphPanel.repaint();
 			}
-		});*/
+		});
+		
+		this.btnDelEdge.addActionListener(new ActionListener() { 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Remove edge
+				GraphFrame.this.deleteEdge();
+			}
+		});
 		this.btnNewEdge.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
-				/*Open a window if 2 vertexes are selected*/
 				GraphFrame.this.addEdge();
 			}
 		});
 		this.undo.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				GraphFrame.this.model.getUndoManager().undoOperation();
+				GraphFrame.this.redo.setEnabled(true);
 				if (GraphFrame.this.model.getUndoManager().stackOperation.isEmpty())
 					GraphFrame.this.undo.setEnabled(false);
 			}
@@ -71,8 +91,33 @@ public class GraphFrame extends JFrame{
 		this.redo.addActionListener(new ActionListener() { 
 			@Override	
 			public void actionPerformed(ActionEvent e) {
+				GraphFrame.this.model.getRedoManager().redoOperation();
+				GraphFrame.this.undo.setEnabled(true);
 				if (GraphFrame.this.model.getRedoManager().stackOperation.isEmpty())
 					GraphFrame.this.redo.setEnabled(false);
+			}
+		});
+		
+		this.mnSave.addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+				GraphFrame.this.saveGraph();
+			}
+		});
+	
+		this.mnLoad.addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+				GraphFrame.this.loadGraph();
+			}
+		});
+		
+		this.mnCredits.addActionListener(new ActionListener() { 
+			@Override	
+			public void actionPerformed(ActionEvent e) {
+				String error = "Graph Editor 2016 \n Developed by Corradini Matteo (S3051390) and "
+								+ "Berke Atac (S3075168)";
+				JOptionPane.showMessageDialog(null, error);
 			}
 		});
 		
@@ -93,18 +138,24 @@ public class GraphFrame extends JFrame{
 
 		//add first headings
 		this.menuFile = new JMenu("File");
-		this.menuEdit = new JMenu("Edit");
-		this.menuWindow = new JMenu("Window");
+		this.menuInfo = new JMenu("?");
 
+		this.mnSave = new JMenuItem("Save Graph");
+		this.mnLoad = new JMenuItem("Load Graph");
+		this.mnCredits = new JMenuItem("Credits");
+		
+		this.menuFile.add(this.mnSave);
+		this.menuFile.add(this.mnLoad);
+		
+		this.menuInfo.add(this.mnCredits);
+		
 		this.menuBar.add(menuFile);
-		this.menuBar.add(menuEdit);
-		this.menuBar.add(menuWindow);
+		this.menuBar.add(menuInfo);
 	}
 
 	private void addPanel(){
 		this.graphPanel = new GraphPanel(this.model);
 		this.northPanel = new JPanel (new GridLayout(2, 0, 0, 0));
-		this.southPanel = new JPanel (new BorderLayout());
 		this.centerPanel = new JPanel (new BorderLayout());
 
 		this.northPanel.add(this.menuBar);
@@ -119,14 +170,17 @@ public class GraphFrame extends JFrame{
 		this.btnNewVertex = new JButton("New Vertex");
 		this.btnDelNode = new JButton("Delete Vertex");
 		this.btnNewEdge = new JButton("Add Edge");
+		this.btnDelEdge = new JButton("Delete Edge");
 		this.undo = new JButton("Undo");
 		this.redo = new JButton("Redo");
 		this.getUndo().setEnabled(false);
 		this.getRedo().setEnabled(false);
+		this.btnDelEdge.setEnabled(this.model.getEdges().size() > 0);
 		
 		this.getTb().add(this.getBtnNewVertex());
 		this.getTb().add(this.getBtnDelNode());
 		this.getTb().add(this.getBtnNewEdge());
+		this.getTb().add(this.getBtnDelEdge());
 		this.getTb().add(this.getUndo());
 		this.getTb().add(this.getRedo());
 	}
@@ -136,6 +190,60 @@ public class GraphFrame extends JFrame{
 		this.add(this.centerPanel, BorderLayout.CENTER);
 	}
 	
+	private void saveGraph(){
+		SaveGraphDialog saveDialog = new SaveGraphDialog(this.getModel());
+		saveDialog.setVisible(true);
+		this.disEnButtons(false);
+		saveDialog.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	GraphFrame.this.disEnButtons(true);
+		    }
+		});
+	}
+	
+	private void loadGraph(){
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		int result = fileChooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    File selectedFile = fileChooser.getSelectedFile();
+		    String[] nameFile = selectedFile.getName().split("\\.");
+		    try {
+		    	boolean fileCorrect = false;
+				if (nameFile[1].equals("txt")){
+					this.model = new GraphModel(selectedFile.getAbsolutePath(), new StandardGraphParser());
+					fileCorrect = true;
+				}
+				
+				if (nameFile[1].equals("dot")){
+					this.model = new GraphModel(selectedFile.getAbsolutePath(), new GraphVizGraphParser());
+					fileCorrect = true;
+				}
+				
+				if (nameFile[1].equals("obj")){
+					this.model.deSerializeGraph(selectedFile.getAbsolutePath());
+					fileCorrect = true;
+				}
+					
+				if (!fileCorrect){
+					String error = "Select .txt, .dot or .obj file!";
+					JOptionPane.showMessageDialog(null, error);
+					return;
+				}
+			}catch (IOException e) {
+				// TODO Auto-generated catch block
+				String error = "Problems to open the file!";
+				JOptionPane.showMessageDialog(null, error);
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				String error = "Parsing file failed!";
+				JOptionPane.showMessageDialog(null, error);
+				e.printStackTrace();
+			}
+		}
+	}
 
 	private void addVertex(){
 		NewGraphVertexDialog vertexDialog = new NewGraphVertexDialog(this.getModel());
@@ -144,9 +252,9 @@ public class GraphFrame extends JFrame{
 		vertexDialog.addWindowListener(new WindowAdapter() {
 		    @Override
 		    public void windowClosed(WindowEvent e) {
-		    	//GraphFrame.this.refreshLists();
 		    	GraphFrame.this.disEnButtons(true);
 		    	GraphFrame.this.undo.setEnabled(true);
+		    	GraphFrame.this.redo.setEnabled(false);
 		    }
 		});
 	}
@@ -158,9 +266,27 @@ public class GraphFrame extends JFrame{
 		edgeDialog.addWindowListener(new WindowAdapter() {
 		    @Override
 		    public void windowClosed(WindowEvent e) {
-		    	//GraphFrame.this.refreshLists();
 		    	GraphFrame.this.disEnButtons(true);
 		    	GraphFrame.this.undo.setEnabled(true);
+		    	GraphFrame.this.redo.setEnabled(false);
+		    	if (GraphFrame.this.model.getEdges().size() > 0)
+		    		GraphFrame.this.btnDelEdge.setEnabled(true);
+		    }
+		});
+	}
+	
+	private void deleteEdge(){
+		DelGraphEdgeDialog edgeDialog = new DelGraphEdgeDialog(this.getModel());
+		edgeDialog.setVisible(true);
+		this.disEnButtons(false);
+		edgeDialog.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	GraphFrame.this.disEnButtons(true);
+		    	GraphFrame.this.undo.setEnabled(true);
+		    	GraphFrame.this.redo.setEnabled(false);
+		    	if (GraphFrame.this.model.getEdges().size() == 0)
+		    		GraphFrame.this.btnDelEdge.setEnabled(false);
 		    }
 		});
 	}
@@ -176,18 +302,6 @@ public class GraphFrame extends JFrame{
 	}
 	public void setMenuFile(JMenu menuFile) {
 		this.menuFile = menuFile;
-	}
-	public JMenu getMenuEdit() {
-		return menuEdit;
-	}
-	public void setMenuEdit(JMenu menuEdit) {
-		this.menuEdit = menuEdit;
-	}
-	public JMenu getMenuWindow() {
-		return menuWindow;
-	}
-	public void setMenuWindow(JMenu menuWindow) {
-		this.menuWindow = menuWindow;
 	}
 	public JToolBar getTb() {
 		return tb;
@@ -230,6 +344,12 @@ public class GraphFrame extends JFrame{
 	}
 	public void setModel(GraphModel model) {
 		this.model = model;
+	}
+	public JButton getBtnDelEdge() {
+		return btnDelEdge;
+	}
+	public void setBtnDelEdge(JButton btnDelEdge) {
+		this.btnDelEdge = btnDelEdge;
 	}
 
 

@@ -1,6 +1,8 @@
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.Serializable;
 
-public class GraphVertex {
+public class GraphVertex implements Serializable{
 	
 	/*Name suppose to be unique*/
 	private String name;
@@ -26,6 +28,14 @@ public class GraphVertex {
 		this.rect = rect;
 	}
 
+	public Boolean containsPressedPoint(Point p){
+		if (p.getX() > this.getRect().x && p.getX() < (this.getRect().x + this.getRect().getWidth()) 
+				&& p.getY() > this.getRect().y && p.getY() < (this.getRect().y + this.getRect().getHeight())){
+			return true;
+		}
+		return false;
+	}
+	
 	/*AUTOgenerate setters and getters*/
 	public String getName() {
 		return name;

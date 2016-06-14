@@ -5,6 +5,11 @@ public abstract class AbstractUndoableEdit {
 	public GraphModel graphModel;
 	public Stack<Operation> stackOperation;
 	
+	public AbstractUndoableEdit(){
+		this.graphModel = null;
+		this.stackOperation = new Stack<Operation>();
+	}
+	
 	public AbstractUndoableEdit(GraphModel graphModel){
 		this.graphModel = graphModel;
 		this.stackOperation = new Stack<Operation>();
@@ -16,6 +21,7 @@ public abstract class AbstractUndoableEdit {
 				/*Remove added vertex*/
 				this.getGraphModel().removeVertex(op.getVertex());
 				op.setOperation(Operation.OperationType.REMOVE_VERTEX);
+				break;
 			}
 			case REMOVE_VERTEX:{
 				/*Add removed vertex*/
@@ -24,18 +30,22 @@ public abstract class AbstractUndoableEdit {
 					this.getGraphModel().addEdge(egde);
 				}
 				op.setOperation(Operation.OperationType.ADD_VERTEX);
+				break;
 			}
 			case ADD_EDGE:{
 				/*Remove added edge*/
 				this.getGraphModel().removeEdge(op.getEdges().get(0));
 				op.setOperation(Operation.OperationType.REMOVE_EDGE);
+				break;
 			}
 			case REMOVE_EDGE:{
 				/*Add removed e*/
 				this.getGraphModel().addEdge(op.getEdges().get(0));
 				op.setOperation(Operation.OperationType.ADD_EDGE);
+				break;
 			}
 		}
+		
 		return op;
 	}
 

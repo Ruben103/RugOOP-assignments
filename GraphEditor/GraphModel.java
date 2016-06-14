@@ -1,19 +1,34 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 
-public class GraphModel extends Observable{
+public class GraphModel extends Observable implements Serializable{
 	
 	private ArrayList<GraphVertex> vertexes;
 	private ArrayList<GraphEdge> edges;
-	private UndoManager undoManager;
-	private RedoManager redoManager;
-	
+	transient private UndoManager undoManager;
+	transient private RedoManager redoManager;
+
+	transient private GraphVertex selectedVertex;
+
 	public GraphModel(){
 		this.vertexes = new ArrayList<GraphVertex>();
 		this.edges = new ArrayList<GraphEdge>();
 		this.undoManager = new UndoManager(this);
 		this.redoManager = new RedoManager(this);
+	}
+	
+	public GraphModel(GraphModel _graph){
+		this.vertexes = _graph.getVertexes();
+		this.edges = _graph.getEdges();
+		this.undoManager = _graph.getUndoManager();
+		this.redoManager = _graph.getRedoManager();
 	}
 	
 	public GraphModel(String nameFile, GraphParser parser) throws IOException{
@@ -34,9 +49,14 @@ public class GraphModel extends Observable{
 	
 	public void removeVertex(GraphVertex vertex){
 		String vertexName = vertex.getName();
-		for (GraphEdge edge : this.getEdges()){
-			if (edge.containsVertex(vertex))
-				this.getEdges().remove(edge);
+		for (Iterator<GraphEdge> it = this.getEdges().iterator(); it.hasNext(); ) {
+			GraphEdge edgeToRemove = it.next();
+			if (edgeToRemove.containsVertex(vertex)){
+				String v1Name = edgeToRemove.getV1().getName(), v2Name = edgeToRemove.getV2().getName();
+				it.remove();
+				this.sendNotificationToObs("Remove edge, from:" + v1Name + " to:"
+						 									    + v2Name);
+			}
 		}
 		this.getVertexes().remove(vertex);
 		this.sendNotificationToObs("Remove vertex, name :" + vertexName);
@@ -56,7 +76,7 @@ public class GraphModel extends Observable{
 				this.addVertex(op.getVertex());
 				break;
 			}
-			case REMOVE_VERTEX:{
+			case REMOVE_VERTEX:{		
 				for (GraphEdge edge : this.getEdges()){
 					if (edge.containsVertex(op.getVertex()))
 						op.getEdges().add(edge);
@@ -74,6 +94,8 @@ public class GraphModel extends Observable{
 			}
 		}
 		this.getUndoManager().addOperation(op);
+		if (!this.getRedoManager().stackOperation.isEmpty())
+			this.getRedoManager().flushRedoStack();
 	}	
 	
 	public boolean containsVertex(String vertexName){
@@ -126,6 +148,24 @@ public class GraphModel extends Observable{
 		parser.saveGraph(nameFile, this);
 	}
 	
+	public void serializeGraph(String nameFile) throws IOException{
+	    FileOutputStream fileOut = new FileOutputStream(nameFile);
+	    ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	    out.writeObject(this);
+	    out.close();
+	    fileOut.close();
+	}
+	
+	public void deSerializeGraph(String nameFile) throws IOException, ClassNotFoundException{
+		 FileInputStream fileIn = new FileInputStream(nameFile);
+         ObjectInputStream in = new ObjectInputStream(fileIn);
+         GraphModel _graph = new GraphModel((GraphModel) in.readObject());
+         this.setEdges(_graph.getEdges());
+         this.setVertexes(_graph.getVertexes());
+         in.close();
+         fileIn.close();
+	}
+	
 	public int getIndexEdgeOfVertexes(GraphVertex v1, GraphVertex v2){
 		for (GraphEdge edge : this.getEdges()){
 			if (edge.containsVertex(v1) && edge.containsVertex(v2))
@@ -163,5 +203,11 @@ public class GraphModel extends Observable{
 	}
 	public void setRedoManager(RedoManager redoManager) {
 		this.redoManager = redoManager;
+	}
+	public void setSelectedVertex(GraphVertex selected){
+		this.selectedVertex = selected;
+	}
+	public GraphVertex getSelectedVertex(){
+		return selectedVertex;
 	}
 }

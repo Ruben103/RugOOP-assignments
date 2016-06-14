@@ -1,11 +1,13 @@
-public class RedoManager extends AbstractUndoableEdit {
+import java.io.Serializable;
+
+public class RedoManager extends AbstractUndoableEdit{
 
 	public RedoManager(GraphModel graphModel) {
 		super(graphModel);
 	}
 
 	public void redoOperation(){
-		Operation op = this.getStackOperation().peek();
+		Operation op = this.getStackOperation().pop();
 		this.getGraphModel().getUndoManager().addOperation(this.doOperation(op));
 	}
 	

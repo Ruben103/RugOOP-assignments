@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class GraphEdge {
+public class GraphEdge implements Serializable{
 
 	private GraphVertex v1, v2;
 	
